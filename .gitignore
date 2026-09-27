@@ -25,3 +25,9 @@ bun.lockb
 # stray vitest internals that were already in this folder before the project started
 /v_config.ts
 /v_workspace.ts
+
+# Local compose overrides. `.env.example` is the tracked template; `.env` is
+# per-machine and holds HOST_PORT, NPM_REGISTRY and VITE_BASE_PATH, none of which
+# belong in the repository. Not adding `.env.local` and friends: compose reads
+# `.env` only, so an untracked variant would be silently ignored.
+.env
