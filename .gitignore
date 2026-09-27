@@ -1,0 +1,27 @@
+node_modules/
+dist/
+.tmp/
+coverage/
+.vite/
+.ulw/
+.omo/
+.tmp/
+*.local
+*.log
+.DS_Store
+
+# Lockfiles. This project is on pnpm, so `pnpm-lock.yaml` IS committed (it is the
+# reproducibility contract). The other package managers' lockfiles are ignored so a
+# stray `npm install` / `yarn` run cannot quietly become the source of truth.
+package-lock.json
+yarn.lock
+bun.lockb
+.npmrc.local
+
+# pnpm's content-addressable store lives outside the project by default, but keep this
+# in case a future `node-linker` change moves it in
+.pnpm-store/
+
+# stray vitest internals that were already in this folder before the project started
+/v_config.ts
+/v_workspace.ts
