@@ -157,6 +157,34 @@ pnpm ≥ 10 默认**拦截所有依赖的安装脚本**并在有未处理项时�
 
 它们内部**不依赖任何包管理器**：`qa:evidence` 用当前 node 直接跑 `node_modules/vitest/vitest.mjs`，两个 Node 脚本用 `process.execPath` 跑 `node_modules/vite/bin/vite.js`。换包管理器不会改坏这几个脚本，也不会误用到全局装的另一个版本。
 
+## Docker 部署
+
+镜像是多阶段构建，最终产物是 nginx 直接提供的静态文件：**容器里没有 Node 运行时，也没有 `node_modules` 和源码**。构建阶段照旧跑 `vue-tsc --noEmit`，类型检查这道门禁没有因为进了容器被去掉。
+
+```bash
+docker compose build     # 构建镜像
+docker compose up -d     # 后台启动，宿主端口默认 8080
+docker compose ps        # 看健康状态
+docker compose down      # 停止并删除容器
+```
+
+改端口、换子路径走 `.env`（先 `cp .env.example .env`），或临时用环境变量：
+
+```bash
+HOST_PORT=9000 docker compose up -d
+```
+
+服务是**明文 HTTP**，TLS 请在前置反向代理上终止，不要把证书和私钥打进镜像层。
+
+`docker-compose.yml` 与 `docker/` 里值得知道的两处加固：
+
+- **`read_only: true` 加 `tmpfs`。** 容器根文件系统不可写，只给 nginx 的三个写路径（`/var/cache/nginx`、`/run` 的 PID 文件、`/tmp`）挂了内存盘。nginx 的访问日志与错误日志在官方镜像里是指向 `/dev/stdout` 和 `/dev/stderr` 的软链，所以不需要额外的可写路径。这一条成立的前提是 `Dockerfile` 里把 `ENTRYPOINT` 清空了：官方镜像的 entrypoint 会在 exec 之前 `sed` 改写 `/etc/nginx/nginx.conf`，只读根上会直接失败。
+- **CSP 头。** `docker/security-headers.conf` 里 `default-src 'none'` 配 `connect-src 'none'`，把"运行期不发出任何网络请求"从一句说明变成浏览器强制的约束；`style-src` 的 `'unsafe-inline'` 是唯一让步，给的是 `index.html` 里那段消白屏的内联 `<style>`。
+
+构建默认走仓库 `.npmrc` 里的 npmmirror；墙外构建设 `NPM_REGISTRY`；子路径部署用 `VITE_BASE_PATH`，两者都见 `.env.example`。
+
+> 容器启动即退时，先去掉 `read_only` 再跑一次。这份配置在编写它的机器上无法验证（那台机器没有安装 Docker），tmpfs 列表来自 nginx 文档而不是实测启动结果。
+
 ## 项目结构
 
 ```
