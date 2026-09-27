@@ -1,0 +1,64 @@
+# Compose v2 spec format. There is deliberately no `version:` key -- modern
+# Compose ignores it and warns about it.
+#
+# One service, no database, no volumes for app data: the app is a stateless
+# static bundle, so there is nothing a restart would need to persist.
+name: zip-in-image
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Empty by default, which keeps the registry pinned in the repository's
+        # .npmrc (npmmirror). Set it to build from outside China.
+        NPM_REGISTRY: ${NPM_REGISTRY:-}
+        # Baked into the bundle at build time. Changing it requires a rebuild,
+        # not just a restart.
+        VITE_BASE_PATH: ${VITE_BASE_PATH:-/}
+    image: zip-in-image:local
+
+    # Plain HTTP on the host port. Terminate TLS in a reverse proxy in front of
+    # this container; putting a certificate and a private key here would mean
+    # shipping secrets inside an image layer.
+    ports:
+      - "${HOST_PORT:-8080}:80"
+
+    restart: unless-stopped
+
+    # The root filesystem is never written. nginx needs exactly three writable
+    # paths, so each gets a tmpfs:
+    #   /var/cache/nginx  proxy buffers, client_body_temp_path, and the temp
+    #                     paths nginx creates for proxied responses
+    #   /var/run         the master process PID file. On Alpine /var/run is a
+    #                     symlink to /run, so this effectively mounts /run.
+    #   /tmp             general scratch. Harmless, but listing it keeps the
+    #                     table complete if a future nginx version wants it.
+    # No tmpfs for /var/log/nginx: the official image symlinks its access and
+    # error logs to /dev/stdout and /dev/stderr, so they need no writable path.
+    #
+    # This only works because the Dockerfile resets ENTRYPOINT. The stock
+    # nginx entrypoint seds /etc/nginx/nginx.conf in place before exec'ing,
+    # which a read-only root refuses. With that reset the tmpfs list below is
+    # genuinely the whole set of writes.
+    #
+    # If the container ever still exits immediately on startup, remove
+    # `read_only` first and run it again -- that isolates a missing writable path
+    # before you go hunting through the tmpfs list. Unverified: Docker was not
+    # installed on the machine this was authored on, so the tmpfs list comes from
+    # the nginx documentation rather than from an observed boot.
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /tmp
+
+    healthcheck:
+      # busybox wget ships in the nginx alpine image, so the check needs no
+      # extra tooling in the image and no curl install.
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
