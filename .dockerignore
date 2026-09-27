@@ -1,0 +1,43 @@
+# Required by the build -- never add these, and never "optimise" them away:
+#   package.json  pnpm-lock.yaml  pnpm-workspace.yaml  .npmrc
+#   tsconfig.json  vite.config.ts  vitest.config.ts  env.d.ts  index.html
+#   src/  public/  test/
+#
+# test/ ships even though the runtime image never contains it. tsconfig.json's
+# include list reaches test/**/*.ts, so `vue-tsc --noEmit` -- the build's own
+# gate -- type-checks it. Excluding test/ fails the build; it does not slim it.
+#
+# pnpm-workspace.yaml is in the same category: it carries
+# `allowBuilds: { playwright: false }`, and without it pnpm re-enables
+# playwright's postinstall, i.e. roughly 150 MB of browser binaries this project
+# never uses.
+#
+# Dockerfile and .dockerignore are intentionally left in. BuildKit does not need
+# them, and excluding them would be noise.
+
+# Produced inside the image, never copied in.
+node_modules
+dist
+coverage
+.vite
+.tmp
+
+# VCS and editor state.
+.git
+.gitignore
+.vscode
+.idea
+
+# Agent scratch directories.
+.omo
+.ulw
+
+# Stray vitest internals that predate this project; tsconfig.json excludes them.
+v_config.ts
+v_workspace.ts
+
+*.log
+
+# Documentation is not a build input. Keep it in the repository, keep it out of
+# the layer.
+README.md
