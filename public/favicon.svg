@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="图片隐写">
+  <title>图片隐写</title>
+  <!-- Dark tile: the mark has to survive a light browser chrome too. -->
+  <rect width="32" height="32" rx="7" fill="#0b0f14"/>
+  <rect x="0.5" y="0.5" width="31" height="31" rx="6.5" fill="none" stroke="#1f2b3a"/>
+
+  <!-- The image: a plain frame, nothing unusual. -->
+  <rect x="7" y="6" width="18" height="20" rx="2" fill="none" stroke="#e6edf3" stroke-width="1.6"/>
+
+  <!-- Folded corner: the only part of the "image" that reads as crafted. -->
+  <path d="M19 6.8V12.8H25" fill="none" stroke="#4cc9f0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- The payload: an offset bar of appended bytes, sitting where an image
+       would never put data of its own. -->
+  <rect x="10.5" y="19.5" width="7.5" height="2" rx="1" fill="#39d98a"/>
+  <rect x="19" y="19.5" width="2.5" height="2" rx="1" fill="#39d98a" fill-opacity="0.45"/>
+</svg>

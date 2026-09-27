@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <!-- Matches the no-flash background below and --bg in src/styles/tokens.css, so the
+         browser chrome, the address bar and the page never disagree about the surface. -->
+    <meta name="theme-color" content="#0b0f14" />
+    <meta
+      name="description"
+      content="图片隐写 · 压缩包伪装：把 ZIP 压缩包以纯二进制拼接的方式藏进图片，生成的文件打开是图片，改后缀就是压缩包；也能反向定位压缩包起始偏移并把图片与压缩包拆开。全程在浏览器本地完成，文件不上传。"
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>图片隐写 · 压缩包伪装 — 本地把 ZIP 藏进图片，也能再拆出来</title>
+    <style>
+      /* kill the white flash before the app stylesheet loads */
+      html {
+        background: #0b0f14;
+        color: #e6edf3;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
