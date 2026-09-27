@@ -1,0 +1,16 @@
+# pnpm >= 10 blocks dependency lifecycle scripts and exits non-zero until every one is
+# explicitly allowed or ignored. pnpm 11 reads that decision from THIS file, not from
+# `.npmrc` (verified: `pnpm config get onlyBuiltDependencies` returns undefined when the
+# keys are placed in `.npmrc`, and pnpm itself generated this file with a hint on install).
+#
+# `playwright: false` is the only entry left. Its postinstall downloads ~150 MB of browser
+# binaries that this project never uses, because browser QA drives the system-installed
+# Edge via `channel: 'msedge'`. Keeping it false makes that intent explicit rather than
+# accidental, and keeps a cold `pnpm install` from pulling in a browser nobody launches.
+#
+# This file previously allowed `esbuild`, which Vite needed in order to resolve its
+# platform binary. Vite 8 bundles Rolldown instead, whose native binary arrives as a
+# platform optional dependency and runs no install script, so esbuild is no longer in the
+# tree at all and has been dropped from this list.
+allowBuilds:
+  playwright: false

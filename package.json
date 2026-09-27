@@ -1,0 +1,42 @@
+{
+  "name": "zip-in-image",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "图片隐写工具：把压缩包伪装成图片（纯二进制拼接），也可精确还原分离。",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "packageManager": "pnpm@11.18.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview --port 4173 --strictPort",
+    "typecheck": "vue-tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:unit": "vitest run --project unit --project evidence",
+    "test:component": "vitest run --project component --project composable",
+    "fixtures": "vitest run --project evidence",
+    "qa:evidence": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/real-surface-check.ps1",
+    "qa:browser": "node scripts/browser-qa.mjs",
+    "qa:shot": "node scripts/shot-verdict.mjs",
+    "qa:preview": "node scripts/preview-proof.mjs",
+    "qa:cjk": "node scripts/cjk-squeeze-check.mjs",
+    "qa:teardown": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/teardown.ps1"
+  },
+  "dependencies": {
+    "vue": "3.5.43"
+  },
+  "devDependencies": {
+    "@types/node": "25.9.8",
+    "@vitejs/plugin-vue": "6.0.9",
+    "@vue/test-utils": "2.5.1",
+    "jsdom": "29.1.1",
+    "playwright": "1.63.0",
+    "typescript": "6.0.3",
+    "vite": "8.3.1",
+    "vitest": "4.1.11",
+    "vue-tsc": "3.3.11"
+  }
+}
