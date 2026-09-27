@@ -1,0 +1,479 @@
+/* ============================================================================
+   base.css — shared layer: reset, dark surface, typography, focus, scrollbar.
+   ----------------------------------------------------------------------------
+   Rules for this file:
+     • No raw color literals. Everything is var(--*) from tokens.css.
+     • No component-specific class names. This is the shared layer only; the
+       two utilities below (.mono, .sr-only) are the sole exceptions and both
+       are generic.
+     • Never a fixed `height` on anything that can hold Chinese text — use
+       min-height, padding and line-height so zh-CN text is never clipped.
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   1. Reset
+   --------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  /* -webkit-text-size-adjust keeps mobile Safari from inflating the CJK
+     text size in landscape, which would blow out the dense readouts. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Matches <meta name="color-scheme" content="dark"> in index.html, so UA
+     form controls, scrollbars and the canvas behind the app are all dark. */
+  color-scheme: dark;
+  /* The default light scrollbar is a bright slab in a dark room. Firefox
+     reads these; WebKit is handled further down. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  /* min-height, never height: CJK glyphs are full-width and a clipped
+     line-height cuts descenders and the 儿 / 乚 style tails. */
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: var(--fs-base);
+  font-weight: var(--fw-regular);
+  /* 1.7 leading: CJK needs more air than Latin at the same size or dense
+     copy collapses into a grey block. */
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* Long hex digests and base64 blobs must wrap rather than force a
+     horizontal scrollbar on the whole app. */
+  overflow-wrap: break-word;
+  line-break: strict;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+figure,
+blockquote,
+dl,
+dd,
+pre {
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  /* Chinese headings have no ascender/descender room built in; a hair of
+     extra leading keeps 二 / 皿 style glyphs from touching. */
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--fs-3xl);
+}
+h2 {
+  font-size: var(--fs-2xl);
+}
+h3 {
+  font-size: var(--fs-xl);
+}
+h4 {
+  font-size: var(--fs-lg);
+}
+h5 {
+  font-size: var(--fs-md);
+}
+h6 {
+  font-size: var(--fs-base);
+  color: var(--text-dim);
+}
+
+p {
+  line-height: var(--lh-body);
+}
+
+ul,
+ol {
+  margin: 0;
+  padding-inline-start: var(--sp-5);
+}
+
+a {
+  color: var(--accent-2);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+strong,
+b {
+  font-weight: var(--fw-semibold);
+}
+
+small {
+  font-size: var(--fs-xs);
+  color: var(--text-dim);
+}
+
+hr {
+  height: 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+img,
+video {
+  height: auto;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+th {
+  text-align: left;
+  font-weight: var(--fw-semibold);
+}
+
+blockquote {
+  padding-inline-start: var(--sp-4);
+  border-inline-start: 2px solid var(--line-strong);
+  color: var(--text-dim);
+}
+
+/* ---------------------------------------------------------------------------
+   2. Form controls — normalized so unstyled controls never leak UA chrome
+      into the dark surface. Components layer on top of this.
+   --------------------------------------------------------------------------- */
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+input,
+select,
+textarea {
+  min-height: 34px;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--bg-inset);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+textarea {
+  /* Grow with content. A fixed height here would silently clip CJK lines. */
+  min-height: 96px;
+  resize: vertical;
+  line-height: var(--lh-body);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-faint);
+  opacity: 1;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: var(--line-strong);
+}
+
+/* Checkboxes, radios and progress bars pick up the signal hue. */
+input[type='checkbox'],
+input[type='radio'],
+input[type='range'],
+progress {
+  accent-color: var(--accent-2);
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+  min-height: 0;
+  width: 16px;
+  height: 16px;
+}
+
+fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+legend {
+  padding: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-dim);
+}
+
+code,
+kbd,
+samp,
+pre {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+code {
+  padding: 0.1em 0.35em;
+  font-size: 0.92em;
+  background: var(--bg-inset);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xs);
+}
+
+pre {
+  overflow-x: auto;
+  padding: var(--sp-4);
+  background: var(--bg-inset);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  line-height: var(--lh-body);
+  tab-size: 2;
+}
+
+kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 0 var(--sp-1);
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+  text-align: center;
+  color: var(--text-dim);
+  background: var(--bg-elev-2);
+  border: 1px solid var(--line-strong);
+  border-bottom-width: 2px;
+  border-radius: var(--r-xs);
+}
+
+/* ---------------------------------------------------------------------------
+   3. Focus — the app is fully keyboard operable, so this ring is a hard
+      requirement. High-contrast cyan, offset so it reads against both
+      --bg and --bg-elev-2. Never remove it without a replacement.
+   --------------------------------------------------------------------------- */
+
+:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  /* The outline inherits the element's own border-radius, so pills stay
+     pills and cards stay cards — no radius override here. */
+}
+
+/* Mouse/pointer focus should not paint a ring. This is only ever reached
+   together with the :focus-visible rule above, which stays in place as the
+   replacement — keyboard focus is never left unringed. */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Windows high-contrast mode ignores author colors; remap to the system
+   highlight so the ring survives. */
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 2px solid Highlight;
+  }
+}
+
+::selection {
+  background: var(--accent-2-soft);
+  color: var(--text);
+}
+
+::placeholder {
+  color: var(--text-faint);
+}
+
+/* ---------------------------------------------------------------------------
+   4. Scrollbar — WebKit. Same values as the scrollbar-color fallback on
+      html above, so both engines render the same control.
+   --------------------------------------------------------------------------- */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border: 2px solid var(--scrollbar-track);
+  border-radius: var(--r-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--scrollbar-track);
+}
+
+/* ---------------------------------------------------------------------------
+   5. Utilities — the only two classes this layer is allowed to define.
+   --------------------------------------------------------------------------- */
+
+/* Every byte offset, file size, percentage and hex digest goes through this:
+   tabular figures keep digits in fixed-width columns so values line up and
+   can be scanned vertically. */
+.mono {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1, 'zero' 1;
+  letter-spacing: 0;
+}
+
+/* Content that only screen readers need (icon-button labels, live-region
+   copy). Visually removed, still announced. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+[hidden] {
+  display: none;
+}
+
+/* ---------------------------------------------------------------------------
+   6. Reduced motion — kill every transition and animation, including ones
+      added later by components. Motion in this app only ever confirms a
+      state change, so removing it costs no information.
+   --------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   7. Narrow viewports — the tool is keyboard-first but must survive a phone.
+   --------------------------------------------------------------------------- */
+
+@media (max-width: 480px) {
+  :root {
+    /* Only the display steps shrink. Spacing tokens stay put so layouts
+       authored against the scale keep their rhythm. */
+    --fs-2xl: 22px;
+    --fs-3xl: 26px;
+    --scrollbar-size: var(--scrollbar-size-slim);
+  }
+
+  html,
+  body {
+    /* Prevents the landscape text inflation in rule 1 from compounding. */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  h1 {
+    font-size: var(--fs-xl);
+  }
+
+  h2 {
+    font-size: var(--fs-2xl);
+  }
+
+  h3 {
+    font-size: var(--fs-lg);
+  }
+
+  /* iOS Safari zooms the viewport on focus for any input under 16px, which
+     would shove the second drop zone off screen. Text entry only — buttons
+     and pills keep the dense scale. */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  pre {
+    font-size: var(--fs-xs);
+    padding: var(--sp-3);
+  }
+
+  .mono {
+    /* Monospace at 320px needs the leading more than it needs the width. */
+    line-height: var(--lh-loose);
+  }
+}

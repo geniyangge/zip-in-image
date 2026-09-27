@@ -1,0 +1,174 @@
+/* ============================================================================
+   tokens.css — design token layer (CSS custom properties ONLY)
+   ----------------------------------------------------------------------------
+   The single place in the whole app where raw color / length literals are
+   allowed to exist. Every other stylesheet — including base.css — must consume
+   these via var(--*). Do not add selectors to this file; it is not a cascade
+   layer, it is a value registry.
+   ========================================================================== */
+
+:root {
+  /* --------------------------------------------------------------------------
+     1. Surfaces — four planes of depth, each one step darker or lighter.
+        bg        : page plane
+        bg-inset  : recessed wells (byte readouts, code blocks, previews)
+        bg-elev   : default card / panel plane
+        bg-elev-2 : raised plane (hover, popovers, selected rows, sticky bars)
+     -------------------------------------------------------------------------- */
+  --bg: #0b0f14;
+  --bg-inset: #070a0f;
+  --bg-elev: #111823;
+  --bg-elev-2: #16202e;
+
+  /* Hairlines. --line is the resting divider, --line-strong is interactive
+     (hover, focus-adjacent, active control boundaries). */
+  --line: #1f2b3a;
+  --line-strong: #2b3a4d;
+
+  /* Text ramp — four steps, each verified >= 4.5:1 on --bg / --bg-elev. */
+  --text: #e6edf3;
+  --text-dim: #93a4b8;
+  --text-faint: #64788f;
+
+  /* Signal colors. Green = verified/ok, cyan = interactive/focus,
+     amber = attention, red = failure. Never used as large fills. */
+  --accent: #39d98a;
+  --accent-2: #4cc9f0;
+  --warn: #f0b429;
+  --error: #ff5c5c;
+  --ok: var(--accent);
+
+  /* Text that sits ON a saturated accent fill. */
+  --accent-ink: #04180f;
+
+  /* Tinted washes + tinted borders for status pills, badges, inline notices.
+     Deliberately low alpha: they tint a surface, they do not replace one. */
+  --accent-soft: rgba(57, 217, 138, 0.12);
+  --accent-line: rgba(57, 217, 138, 0.34);
+  --accent-2-soft: rgba(76, 201, 240, 0.14);
+  --accent-2-line: rgba(76, 201, 240, 0.4);
+  --warn-soft: rgba(240, 180, 41, 0.14);
+  --warn-line: rgba(240, 180, 41, 0.34);
+  --error-soft: rgba(255, 92, 92, 0.14);
+  --error-line: rgba(255, 92, 92, 0.36);
+
+  /* Scrim behind modal / drop-target overlays. */
+  --scrim: rgba(4, 7, 11, 0.72);
+
+  /* A 1px top highlight. On a near-black surface this is the cheapest way to
+     make a flat panel read as a physical object instead of a hole. */
+  --edge-light: rgba(255, 255, 255, 0.045);
+  --edge-light-strong: rgba(255, 255, 255, 0.08);
+
+  /* Elevation. Dark surfaces need tight, low-spread shadows — a large blur
+     just reads as mud. --shadow-1 is for resting, -2 hover, -3 overlays. */
+  --shadow-1: 0 1px 2px rgba(3, 6, 10, 0.55);
+  --shadow-2: 0 4px 14px -4px rgba(3, 6, 10, 0.7);
+  --shadow-3: 0 18px 44px -14px rgba(3, 6, 10, 0.85);
+
+  /* --------------------------------------------------------------------------
+     2. Radii — 6 / 10 / 14. One notch smaller for chips, pill for status dots.
+     -------------------------------------------------------------------------- */
+  --r-xs: 4px;
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-pill: 999px;
+
+  /* --------------------------------------------------------------------------
+     3. Spacing — a 4px base scale. 4 / 8 / 12 / 16 / 24 / 32 / 48.
+        Use these for every gap, pad, and inset in the app.
+     -------------------------------------------------------------------------- */
+  --sp-0: 0;
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+
+  /* Aliases. Both spellings are canonical: components were written against the
+     long form (`--space-*` / `--radius-*`), the scale is defined with the short
+     form. Aliasing here means neither naming choice silently falls back to a
+     hardcoded literal. */
+  --space-1: var(--sp-1);
+  --space-2: var(--sp-2);
+  --space-3: var(--sp-3);
+  --space-4: var(--sp-4);
+  --space-5: var(--sp-5);
+  --space-6: var(--sp-6);
+  --space-7: var(--sp-7);
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-lg: var(--r-lg);
+  --radius-pill: var(--r-pill);
+
+  /* --------------------------------------------------------------------------
+     4. Typography
+        --sans carries "Microsoft YaHei" so CJK falls back to a face with real
+        hinting rather than a synthetic-sans guess. --mono is for byte offsets,
+        file sizes, hashes, and hex dumps only.
+     -------------------------------------------------------------------------- */
+  --mono: ui-monospace, "Cascadia Code", Consolas, monospace;
+  --sans: system-ui, "Segoe UI", "Microsoft YaHei", sans-serif;
+
+  /* Dense by intent: a developer tool shows more rows per screen than a
+     marketing page. 12–14px carries the interface; larger steps are headings. */
+  --fs-xs: 12px;
+  --fs-sm: 13px;
+  --fs-base: 14px;
+  --fs-md: 15px;
+  --fs-lg: 17px;
+  --fs-xl: 21px;
+  --fs-2xl: 27px;
+  --fs-3xl: 34px;
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* --lh-body is tuned for zh-CN: CJK glyphs need more leading than Latin at
+     the same size, or dense paragraphs turn into a grey block. */
+  --lh-tight: 1.3;
+  --lh-snug: 1.5;
+  --lh-body: 1.7;
+  --lh-loose: 1.85;
+
+  /* Latin/CJK mixed text benefits from a hair of extra tracking; uppercase
+     micro-labels (section eyebrows) benefit from the opposite. */
+  --ls-tight: -0.01em;
+  --ls-wide: 0.08em;
+
+  /* --------------------------------------------------------------------------
+     5. Focus — the app is fully keyboard operable, so this is a hard
+        requirement, never an override target. High-contrast cyan, offset so
+        it stays legible against both --bg and --bg-elev-2.
+     -------------------------------------------------------------------------- */
+  --focus-ring-color: var(--accent-2);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  /* --------------------------------------------------------------------------
+     6. Scrollbar — the default light-mode scrollbar is a bright rectangle in a
+        dark room. Sized + colored here so both engines agree.
+     -------------------------------------------------------------------------- */
+  --scrollbar-size: 10px;
+  --scrollbar-size-slim: 8px;
+  --scrollbar-track: var(--bg);
+  --scrollbar-thumb: #243244;
+  --scrollbar-thumb-hover: #33455c;
+
+  /* --------------------------------------------------------------------------
+     7. Motion — short, eased, and fully disabled under reduced-motion (see
+        base.css). Durations only: motion is never decorative here, it always
+        confirms a state change.
+     -------------------------------------------------------------------------- */
+  --dur-instant: 80ms;
+  --dur-fast: 140ms;
+  --dur: 200ms;
+  --dur-slow: 320ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
