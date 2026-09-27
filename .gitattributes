@@ -1,0 +1,8 @@
+# Mirrors .editorconfig so line endings do not depend on each contributor's
+# core.autocrlf. Without this file, a Windows clone with autocrlf=true checks out
+# every source file as CRLF and checks PowerShell scripts out as LF -- the exact
+# inverse of what .editorconfig asks for.
+* text=auto eol=lf
+
+# .editorconfig asks for CRLF here so the scripts parse under Windows PowerShell.
+*.ps1 text eol=crlf
