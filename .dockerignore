@@ -32,10 +32,6 @@ coverage
 .omo
 .ulw
 
-# Stray vitest internals that predate this project; tsconfig.json excludes them.
-v_config.ts
-v_workspace.ts
-
 *.log
 
 # Documentation is not a build input. Keep it in the repository, keep it out of
