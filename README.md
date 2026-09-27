@@ -260,6 +260,8 @@ test/
 - **.NET 读取器打不开结果**，见上面的兼容性矩阵。这是最容易让用户意外的一条。
 - **一个已知的 Playwright 1.49.1 + Edge 产物问题**：页面发生下载时会多出一个未处理的 `TargetClosedError`。QA 脚本把它标为 `[note]`，它不是产品判定结论；任何**其他**未处理的 rejection 仍然会让检查失败。记在这里是为了让后来的维护者不要去追它。
 
-## 仓库根目录的 v_config.ts / v_workspace.ts
+## 仓库根目录的两个历史文件
 
-根目录下的 `v_config.ts` 与 `v_workspace.ts` 是先于本项目存在于该目录中的 vitest 内部文件，与本工具无关。它们已被 `tsconfig.json` 的 `exclude` 排除，不参与类型检查。**请由目录所有者决定是否删除**，本项目不主动动它们。
+早于本项目存在于该目录中的 `v_config.ts` 与 `v_workspace.ts` 是 **vitest 自己的内部源码**——前者是它的配置类型定义，后者是 workspace 引擎。它们的相对导入（`../node/reporters`、`./config`、`../integrations/browser/server`）只在 vitest 源码树内部才成立，落到本目录后既无法解析也不参与任何编译：不在 `tsconfig.json` 的 `include` 里，不匹配 `vitest.config.ts` 的四个 `include` glob，`node_modules` 里装的是完整的 vitest，从不需要根目录下这两份拷贝。
+
+两个文件与本工具无关，**已删除**，`tsconfig.json` 的 `exclude`、`.gitignore` 与 `.dockerignore` 里对应的三处条目随之移除。记在这里是为了让后来的维护者看到同名文件时不要重新提交：它们不是本项目的文件，也不参与构建。
